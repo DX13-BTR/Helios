@@ -1,0 +1,13 @@
+1️⃣ Company_Tracker:
+- Calculate safe funds after cash, liabilities, VAT/CT, buffers.
+- Recommended draw funds pre-UC.
+
+2️⃣ Director_Pay_Engine:
+- Salary to max tax-free/low-NIC allowance.
+- Remainder as dividends.
+- Total Proposed Draw feeds UC Planner.
+
+3️⃣ Planner_Main:
+- Compare proposed draw to MIF.
+- Calculate UC taper reduction.
+- Adjust draw if higher UC retention benefits you.

@@ -1,0 +1,89 @@
+🚩 Efkaristo Financial Stability System Build – Current Progress
+Overall Objective:
+To stabilise Efkaristo Ltd’s financial flows, ensuring:
+✅ Predictable, consistent monthly director pay for Mike & Teresa.
+✅ Alignment with Universal Credit (UC) assessment periods:
+
+11th–10th each month (payment on 17th).
+✅ Building buffer reserves for VAT, PAYE, CT, and emergencies.
+✅ Long-term aim to accumulate a property deposit while maintaining quality of life.
+✅ Reduce financial stress and admin friction in managing personal and business cash flow.
+
+✅ Modules Built or Partially Built:
+1️⃣ UC Planner:
+UC period tracking confirmed: 11th–10th, payment 17th.
+
+Aims to model optimal payment timings for salary/dividends to maximise UC without breaching thresholds unnecessarily.
+
+Currently mapped manually; automation pending.
+
+2️⃣ Director Pay Engine:
+Captures net business cash position.
+
+Calculates safe, sustainable draw amounts while preserving required buffers.
+
+Intended to move from ad-hoc pay patterns to 2 structured payments/month for each director.
+
+Currently tracked manually.
+
+3️⃣ Buffer Logic:
+Logic drafted to ensure:
+
+VAT allocation set aside from each payment.
+
+PAYE set aside.
+
+CT set aside.
+
+Surplus confirmed before non-essential or discretionary spending.
+
+Partial manual tracking in spreadsheets.
+
+4️⃣ Drawdown Planner:
+Models drawdown amounts against upcoming obligations.
+
+Will integrate with payment readiness dashboard for visibility.
+
+Currently conceptual, pending build.
+
+✅ Current Related Progress:
+Expense Improvement Plan underway (reducing SaaS bloat, inefficient spend, subscriptions, hardware overspend) to free cash for stable director pay.
+
+Preparing to align payment runs with UC planning:
+
+Two structured payment dates each month for Mike & Teresa.
+
+Consistent approach for smoother UC calculation and reduced admin.
+
+✅ Next Priorities for the Build:
+1️⃣ Automate the UC Planner to show live safe draw amounts vs. UC thresholds.
+2️⃣ Activate structured payment workflow to align with the planner outputs.
+3️⃣ Integrate buffer logic dynamically with real cash positions.
+4️⃣ Deploy in Helios OS/ClickUp/Notion or lightweight dashboard for daily/weekly visibility.
+5️⃣ Continue to prune expenses to optimise available drawdown capacity.
+
+🪪 Constraints:
+Mike and Teresa are on UC and need stable income but must manage thresholds.
+
+Desire to maintain a quality of life while building towards a property deposit.
+
+Business cash flow can be lumpy; stability is the primary goal before aggressive savings.
+
+✅ Outcome:
+The system will ensure:
+✅ Predictable pay.
+✅ Alignment with UC.
+✅ Buffer protection.
+✅ Clarity on available cash vs. obligations.
+✅ Reduced financial stress.
+
+🚀 What is needed from the DPM thread next:
+✅ Build the next logical step in the Financial Build pipeline:
+
+Automate UC Planner with structured input/output.
+
+Link structured payment run templates aligned with this logic.
+
+Begin live tracking and adjustment integration with Expense Improvement wins.
+
+End of summary for DPM build thread.

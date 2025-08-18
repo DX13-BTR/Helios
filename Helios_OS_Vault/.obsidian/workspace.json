@@ -1,0 +1,207 @@
+{
+  "main": {
+    "id": "d5f9b7921f18074a",
+    "type": "split",
+    "children": [
+      {
+        "id": "83557e3b2d731bfe",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9bff9539bc4f961e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "02_Core_Systems/Financial Stability System/Data/FS-Data_BaselineMonthlySpend.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "FS-Data_BaselineMonthlySpend"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4666bb28ea1735d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "132ea9f07a25111a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "403effb8fb9d1b18",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "286e5ef04601ea8e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "e3efd16d404891ba",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "e26b3fbcb64ec183",
+    "type": "split",
+    "children": [
+      {
+        "id": "756bd6e2fc2aaa24",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a238e08e6078e11a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "7b574a4eab1d75f5",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "e960a1f6b66f6439",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "a2d48709044a49fe",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "9bff9539bc4f961e",
+  "lastOpenFiles": [
+    "00_Helios_Master_Controls/Helios Strategic Architecture Pivot & Transition Log.md",
+    "00_Helios_Master_Controls/helios-summary-2025-07-29.md",
+    "Untitled",
+    "00_Helios_Master_Controls/Efkaristo-GPT-Agent-Command-File-v1.0.md",
+    "02_Core_Systems/Financial Stability System/Tracker/helios_fss_copilot_plan.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_copySuggestedTransfersToSheet.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_generateSuggestedTransfers_Module.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_SuggestedTransfers_ApprovalLogic_Level2A.md",
+    "02_Core_Systems/Financial Stability System/Modules/SavingsGoalPlanner_Module_2025-07-16.md",
+    "01_Planning_Engine/helios_master_system.md",
+    "01_Planning_Engine/Helios LLM Integration Plan.md",
+    "02_Core_Systems/Financial Stability System/Data/FS-Log_Starling-vs-Xero_DataRoles.md",
+    "02_Core_Systems/Financial Stability System/Data/FS-Data_ProfessionalSpendLog.md",
+    "02_Core_Systems/Financial Stability System/Data/FS-Data_PersonalSpendLog.md",
+    "02_Core_Systems/Financial Stability System/Data/FS-Data_BaselineMonthlySpend.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_DashboardAdviceIntegration_2025-07-16.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_generateAIAdvice_Module_2025-07-16.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_generateSpendingAdvice_Module.md",
+    "02_Core_Systems/Financial Stability System/Modules/FSS_NextLevel_ProductisationPlan_2025-07-15.md",
+    "02_Core_Systems/Financial Stability System/Modules/WeeklyDigestPlanner_Module_2025-07-16.md",
+    "02_Core_Systems/Financial Stability System/Tracker/helios_fss_copilot_plan (2).md",
+    "02_Core_Systems/Financial Stability System/Tracker/FS-BuildSnapshot-2025-07-14.md",
+    "02_Core_Systems/Financial Stability System/Tracker/FS-BuildSnapshot_2025-07-15_TransitionToTransactionEngine.md.md",
+    "02_Core_Systems/Financial Stability System/Tracker/Tracker_FSS_Build_Plan.md",
+    "02_Core_Systems/Financial Stability System/Tracker/helios_fss_copilot_plan (1).md",
+    "FSS Plan.md",
+    "02_Core_Systems/Financial Stability System/Tracker/FS-BuildSnapshot_2025_07_15_v3.md",
+    "02_Core_Systems/Financial Stability System.zip",
+    "_Attachments/Spreadsheets/Work_Only_Apps_Deduplicated.xlsx",
+    "_Attachments/Spreadsheets",
+    "_Attachments/New folder",
+    "Efkaristo_OS/Stuff/~$Work_Only_Apps_Deduplicated.xlsx",
+    "02_Core_Systems/Client_Intelligence_Engine/00_Concepts/🚀 Factoring the.docx",
+    "02_Core_Systems/Client_Intelligence_Engine/00_Concepts",
+    "02_Core_Systems/Client_Intelligence_Engine/New folder",
+    "02_Core_Systems/Client_Intelligence_Engine"
+  ]
+}

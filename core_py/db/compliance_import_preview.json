@@ -1,0 +1,596 @@
+[
+  {
+    "task_id": "86c47fun2",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-09-30T16:30:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c47fu9b",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-09-30T16:30:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c47ftv2",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-09-05T16:30:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mq3mc",
+    "task_type": "fixed_date",
+    "deadline_type": "sa800",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Ace of Maids",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c489e8y",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-21T19:00:00+00:00",
+    "client_code": "AoM",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaaa",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-10-30T04:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaa7",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-12-09T04:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaa3",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-09-08T04:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqa9z",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-07-07T03:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqa9w",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-01-07T04:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqa9r",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-11-17T04:00:00+00:00",
+    "client_code": "ADHD Advocate",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaaj",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-11-30T04:00:00+00:00",
+    "client_code": "Athena Home Services",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaag",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "Athena Home Services",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaad",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-08-01T03:00:00+00:00",
+    "client_code": "Athena Home Services",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c488n4m",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-08-01T03:00:00+00:00",
+    "client_code": "Athena",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c489a2v",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "CT600",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaap",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Cat Hayes",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaav",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Claire Lockey",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqabh",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-12-09T04:00:00+00:00",
+    "client_code": "Cnet Construction",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqabb",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-09-08T04:00:00+00:00",
+    "client_code": "Cnet Construction",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqab9",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-07-07T03:00:00+00:00",
+    "client_code": "Cnet Construction",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqab2",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "Cnet Construction",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaax",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-01-28T04:00:00+00:00",
+    "client_code": "Cnet Construction",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c488th9",
+    "task_type": "fixed_date",
+    "deadline_type": "cis_return",
+    "fixed_date": "2025-08-19T03:00:00+00:00",
+    "client_code": "Cnet",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c488twp",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-01-28T04:00:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c488twk",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-10-30T04:00:00+00:00",
+    "client_code": "CT600",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mg3qb",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-10-07T03:00:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqabp",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Dean Britton",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqac0",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-12-31T04:00:00+00:00",
+    "client_code": "Efkaristo",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqabx",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "Efkaristo",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqabt",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-08-17T04:00:00+00:00",
+    "client_code": "Efkaristo",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c488vtj",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-08-17T03:00:00+00:00",
+    "client_code": null,
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mq3np",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Emma Newman",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqac8",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-12-31T04:00:00+00:00",
+    "client_code": "Floor Doctors",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqach",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-11-30T04:00:00+00:00",
+    "client_code": "Fuller Times",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqace",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "Fuller Times",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqacb",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-09-21T04:00:00+00:00",
+    "client_code": "Fuller Times",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqacn",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Gemma Edwards",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqadd",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2026-04-30T04:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqad7",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-01-08T04:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqad4",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-10-09T04:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqacz",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-08-07T03:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqacw",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-05-07T03:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqact",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "IRCM",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqadm",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Jade Francis",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqae3",
+    "task_type": "fixed_date",
+    "deadline_type": "ct600",
+    "fixed_date": "2025-12-31T04:00:00+00:00",
+    "client_code": "KC Swimmers",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqae0",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "KC Swimmers",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqadx",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-08-22T04:00:00+00:00",
+    "client_code": "KC Swimmers",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4890km",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-09-01T03:00:00+00:00",
+    "client_code": "KCS",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqae7",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Kevin Sinfield",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaf5",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2026-01-08T04:00:00+00:00",
+    "client_code": "Kasorb",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaew",
+    "task_type": "fixed_date",
+    "deadline_type": "vat_return",
+    "fixed_date": "2025-10-09T04:00:00+00:00",
+    "client_code": "Kasorb",
+    "recurrence_pattern": "quarterly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqaea",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-01-25T04:00:00+00:00",
+    "client_code": "Kasorb",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqafj",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-19T04:00:00+00:00",
+    "client_code": "Larkspur Business Se",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqafd",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2026-12-03T04:00:00+00:00",
+    "client_code": "Larkspur Business Se",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4891rg",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-09-01T03:00:00+00:00",
+    "client_code": "Larkspur",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqafr",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Grazia Caniglia-Iaco",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqafy",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Mike Hards",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqag3",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Mike Holloway",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqag6",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Mike Kerr",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqag9",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Nat Davies",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mq3qt",
+    "task_type": "fixed_date",
+    "deadline_type": "sa100",
+    "fixed_date": "2026-01-31T04:00:00+00:00",
+    "client_code": "Nigel Gillard",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c489598",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-18T03:00:00+00:00",
+    "client_code": "Randalls",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4mqagq",
+    "task_type": "fixed_date",
+    "deadline_type": "cs01",
+    "fixed_date": "2025-11-30T04:00:00+00:00",
+    "client_code": "Ascot Menopause",
+    "recurrence_pattern": "annual",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c48991m",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-26T03:00:00+00:00",
+    "client_code": "LPFA",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  },
+  {
+    "task_id": "86c4899d8",
+    "task_type": "fixed_date",
+    "deadline_type": "payroll",
+    "fixed_date": "2025-08-31T03:00:00+00:00",
+    "client_code": "Totally Tangerine",
+    "recurrence_pattern": "monthly",
+    "calendar_blocked": 0
+  }
+]

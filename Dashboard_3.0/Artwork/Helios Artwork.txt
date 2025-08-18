@@ -1,0 +1,11 @@
+1. ICO Icon (for launcher + .bat)
+“Create a flat vector-style tech sun icon representing ‘Helios’, the Greek sun god. The icon should feature a central AI core or gear and circuit-style rays radiating out. It must be recognisable at small sizes (32x32), with high contrast and minimal detail clutter. Style should be modern and clean, with golden-orange highlights on a dark or transparent background. Output as 512x512 square, suitable for .ico conversion.”
+
+2. PWA Icon / Taskbar Icon
+“Design a clean, modern 512x512 app icon for a progressive web app called ‘Helios’. The icon should feature a glowing sun with a stylised AI nucleus and geometric circuit-style rays. Prioritise a flat, crisp vector look, with bold contrast and subtle glow. Colors: golden core, soft neon rays, on a transparent or dark purple background. Must look good as a pinned taskbar icon.”
+
+3. Helios Logo (Splash / Identity)
+“Create a high-resolution logo-style image for a product called ‘Helios’ — a digital assistant and AI engine. The logo should feature a radiant tech sun (central core + circuit rays) alongside a futuristic wordmark that says ‘HELIOS’ in a clean sci-fi font. Aim for balance between mythic symbolism and modern interface design. Suitable for splash screens, identity headers, or brand cards. Landscape layout preferred.”
+
+4. Animated Logo / Loader
+“Create a 3–5 second looping animation of a tech sun icon pulsing with AI energy. The sun’s nucleus glows softly and emits data-like circuit rays that pulse or rotate gently. Style: clean vector, futuristic, minimalist with layered glow. Animation should convey intelligence, power, and stability. Format: 1024x1024, looped, dark background. Designed for use as a loading screen or AI startup animation.”

@@ -1,0 +1,67 @@
+task_id,task_type,deadline_type,fixed_date,client_code,recurrence_pattern,calendar_blocked
+86c47fun2,fixed_date,ct600,2025-09-30T16:30:00+00:00,,annual,0
+86c47fu9b,fixed_date,vat_return,2025-09-30T16:30:00+00:00,,quarterly,0
+86c47ftv2,fixed_date,payroll,2025-09-05T16:30:00+00:00,,monthly,0
+86c4mq3mc,fixed_date,sa800,2026-01-31T04:00:00+00:00,Ace of Maids,annual,0
+86c489e8y,fixed_date,payroll,2025-08-21T19:00:00+00:00,AoM,monthly,0
+86c4mqaaa,fixed_date,ct600,2025-10-30T04:00:00+00:00,ADHD Advocate,annual,0
+86c4mqaa7,fixed_date,vat_return,2025-12-09T04:00:00+00:00,ADHD Advocate,quarterly,0
+86c4mqaa3,fixed_date,vat_return,2025-09-08T04:00:00+00:00,ADHD Advocate,quarterly,0
+86c4mqa9z,fixed_date,vat_return,2026-07-07T03:00:00+00:00,ADHD Advocate,quarterly,0
+86c4mqa9w,fixed_date,vat_return,2026-01-07T04:00:00+00:00,ADHD Advocate,quarterly,0
+86c4mqa9r,fixed_date,cs01,2025-11-17T04:00:00+00:00,ADHD Advocate,annual,0
+86c4mqaaj,fixed_date,ct600,2025-11-30T04:00:00+00:00,Athena Home Services,annual,0
+86c4mqaag,fixed_date,payroll,2025-08-19T04:00:00+00:00,Athena Home Services,monthly,0
+86c4mqaad,fixed_date,cs01,2026-08-01T03:00:00+00:00,Athena Home Services,annual,0
+86c488n4m,fixed_date,cs01,2026-08-01T03:00:00+00:00,Athena,annual,0
+86c489a2v,fixed_date,ct600,2026-01-31T04:00:00+00:00,CT600,annual,0
+86c4mqaap,fixed_date,sa100,2026-01-31T04:00:00+00:00,Cat Hayes,annual,0
+86c4mqaav,fixed_date,sa100,2026-01-31T04:00:00+00:00,Claire Lockey,annual,0
+86c4mqabh,fixed_date,vat_return,2025-12-09T04:00:00+00:00,Cnet Construction,quarterly,0
+86c4mqabb,fixed_date,vat_return,2025-09-08T04:00:00+00:00,Cnet Construction,quarterly,0
+86c4mqab9,fixed_date,vat_return,2026-07-07T03:00:00+00:00,Cnet Construction,quarterly,0
+86c4mqab2,fixed_date,payroll,2025-08-19T04:00:00+00:00,Cnet Construction,monthly,0
+86c4mqaax,fixed_date,cs01,2026-01-28T04:00:00+00:00,Cnet Construction,annual,0
+86c488th9,fixed_date,cis_return,2025-08-19T03:00:00+00:00,Cnet,monthly,0
+86c488twp,fixed_date,cs01,2026-01-28T04:00:00+00:00,,annual,0
+86c488twk,fixed_date,ct600,2025-10-30T04:00:00+00:00,CT600,annual,0
+86c4mg3qb,fixed_date,vat_return,2025-10-07T03:00:00+00:00,,quarterly,0
+86c4mqabp,fixed_date,sa100,2026-01-31T04:00:00+00:00,Dean Britton,annual,0
+86c4mqac0,fixed_date,ct600,2025-12-31T04:00:00+00:00,Efkaristo,annual,0
+86c4mqabx,fixed_date,payroll,2025-08-19T04:00:00+00:00,Efkaristo,monthly,0
+86c4mqabt,fixed_date,cs01,2025-08-17T04:00:00+00:00,Efkaristo,annual,0
+86c488vtj,fixed_date,cs01,2025-08-17T03:00:00+00:00,,annual,0
+86c4mqac4,fixed_date,sa100,2026-01-31T04:00:00+00:00,Emma Newman,annual,0
+86c4mqac8,fixed_date,ct600,2025-12-31T04:00:00+00:00,Floor Doctors,annual,0
+86c4mqach,fixed_date,ct600,2025-11-30T04:00:00+00:00,Fuller Times,annual,0
+86c4mqace,fixed_date,payroll,2025-08-19T04:00:00+00:00,Fuller Times,monthly,0
+86c4mqacb,fixed_date,cs01,2025-09-21T04:00:00+00:00,Fuller Times,annual,0
+86c4mqacn,fixed_date,sa100,2026-01-31T04:00:00+00:00,Gemma Edwards,annual,0
+86c4mqadd,fixed_date,ct600,2026-04-30T04:00:00+00:00,IRCM,annual,0
+86c4mqad7,fixed_date,vat_return,2026-01-08T04:00:00+00:00,IRCM,quarterly,0
+86c4mqad4,fixed_date,vat_return,2025-10-09T04:00:00+00:00,IRCM,quarterly,0
+86c4mqacz,fixed_date,vat_return,2026-08-07T03:00:00+00:00,IRCM,quarterly,0
+86c4mqacw,fixed_date,vat_return,2026-05-07T03:00:00+00:00,IRCM,quarterly,0
+86c4mqact,fixed_date,payroll,2025-08-19T04:00:00+00:00,IRCM,monthly,0
+86c4mqadm,fixed_date,sa100,2026-01-31T04:00:00+00:00,Jade Francis,annual,0
+86c4mqae3,fixed_date,ct600,2025-12-31T04:00:00+00:00,KC Swimmers,annual,0
+86c4mqae0,fixed_date,payroll,2025-08-19T04:00:00+00:00,KC Swimmers,monthly,0
+86c4mqadx,fixed_date,cs01,2025-08-22T04:00:00+00:00,KC Swimmers,annual,0
+86c4890km,fixed_date,payroll,2025-09-01T03:00:00+00:00,KCS,monthly,0
+86c4mqae7,fixed_date,sa100,2026-01-31T04:00:00+00:00,Kevin Sinfield,annual,0
+86c4mqaf5,fixed_date,vat_return,2026-01-08T04:00:00+00:00,Kasorb,quarterly,0
+86c4mqaew,fixed_date,vat_return,2025-10-09T04:00:00+00:00,Kasorb,quarterly,0
+86c4mqaea,fixed_date,cs01,2026-01-25T04:00:00+00:00,Kasorb,annual,0
+86c4mqafj,fixed_date,payroll,2025-08-19T04:00:00+00:00,Larkspur Business Se,monthly,0
+86c4mqafd,fixed_date,cs01,2026-12-03T04:00:00+00:00,Larkspur Business Se,annual,0
+86c4891rg,fixed_date,payroll,2025-09-01T03:00:00+00:00,Larkspur,monthly,0
+86c4mqafr,fixed_date,sa100,2026-01-31T04:00:00+00:00,Grazia Caniglia-Iaco,annual,0
+86c4mqafy,fixed_date,sa100,2026-01-31T04:00:00+00:00,Mike Hards,annual,0
+86c4mqag3,fixed_date,sa100,2026-01-31T04:00:00+00:00,Mike Holloway,annual,0
+86c4mqag6,fixed_date,sa100,2026-01-31T04:00:00+00:00,Mike Kerr,annual,0
+86c4mqag9,fixed_date,sa100,2026-01-31T04:00:00+00:00,Nat Davies,annual,0
+86c4mqagb,fixed_date,sa100,2026-01-31T04:00:00+00:00,Nigel Gillard,annual,0
+86c489598,fixed_date,payroll,2025-08-18T03:00:00+00:00,Randalls,monthly,0
+86c4mqagq,fixed_date,cs01,2025-11-30T04:00:00+00:00,Ascot Menopause,annual,0
+86c48991m,fixed_date,payroll,2025-08-26T03:00:00+00:00,LPFA,monthly,0
+86c4899d8,fixed_date,payroll,2025-08-31T03:00:00+00:00,Totally Tangerine,monthly,0

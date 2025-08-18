@@ -1,0 +1,96 @@
+# === Secrets (never commit) ===
+.env
+*.env
+.env.*
+!.env.example
+!example.env
+*.pem
+*.p12
+*key*.json
+*token*.json
+client_secret*.json
+credentials*.json
+service-account*.json
+secrets/
+*.keystore
+*.pfx
+*.crt
+
+# npm/yarn/pnpm auth files (can contain tokens)
+.npmrc
+.yarnrc
+.pnpmrc
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.sqlite*
+*.db
+*.db-journal
+.python-version
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+dist/
+build/
+.eggs/
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+.hypothesis/
+
+# === Node / Frontend ===
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+.next/
+out/
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+coverage/
+.vite/
+vite-cache/
+storybook-static/
+.cypress/
+playwright-report/
+
+# === Framework/hosting local dirs ===
+.vercel/
+.netlify/
+firebase-debug.log
+.firebaserc
+
+# === Editors / OS ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+*.swp
+*.swo
+
+# === Logs & temp ===
+*.log
+logs/
+tmp/
+temp/
+**/.pytest_cache/
+**/.ruff_cache/
+
+# === Docker / Compose local files ===
+docker-compose.override.yml
+.docker/
+.env.docker.local

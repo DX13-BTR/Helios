@@ -1,0 +1,11 @@
+### ✅ **Helios FSS Dashboard – Build Progress Summary (as of 16 Jul 2025)**
+
+| **Area**                       | **Details**                                                                                                                                                                                                       |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧱 **Core UI**                 | Built a lightweight, mobile-friendly HTML dashboard (`index.html`) using your rebrand colours (`#625772`, `#facf39`, `#c7ae6a`, etc.).                                                                            |
+| 🔠 **Title & Footer**          | Updated title to **“Helios FSS Dashboard”**. Footer now reads: _"Live data sync from Helios FSS Engine v1.0"_.                                                                                                    |
+| ⚙️ **Live Data Source**        | Connected via `doGet()` Apps Script endpoint to pull real-time values from the `HeliosDashboard` Google Sheet.                                                                                                    |
+| 🧮 **Data Formatting**         | Week Start and This Week now correctly formatted (e.g. `Mon, 14 Jul 2025 – Sun, 20 Jul 2025`). Buffer % Achieved now accurately calculated and displayed (e.g. `194.0%`).                                         |
+| ✅ **Field Coverage**           | Dashboard displays all major financial markers: UC status, buffer safety, drawdown, suggested pay/savings, Efkaristo/personal balances, etc.                                                                      |
+| 📥 **Helios Snapshot Logging** | Daily automated trigger between 07:00–08:00 runs `logHeliosSnapshot()`, appending key metrics to `HeliosHistory` tab.                                                                                             |
+| 📊 **Sheet Charts Embedded**   | Existing charts already in place in `HeliosDashboard`: Net Cash Forecast (30 days), Top Spending Merchants, Buffer Gauge. These can later be exported to the web dashboard via images or Google Charts if needed. |

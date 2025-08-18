@@ -1,0 +1,28 @@
+/* Aggressive overdue flash, but respect reduced-motion users */
+@keyframes helios-strobe {
+  0%   { background-color: #dc2626; box-shadow: 0 0 0px rgba(220,38,38,0.6); }
+  25%  { background-color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.8); }
+  50%  { background-color: #dc2626; box-shadow: 0 0 18px rgba(220,38,38,0.95); }
+  75%  { background-color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.8); }
+  100% { background-color: #dc2626; box-shadow: 0 0 0px rgba(220,38,38,0.6); }
+}
+
+.helios-flashbar {
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-radius: 0;
+}
+
+.helios-flashbar--active {
+  animation: helios-strobe 0.8s infinite;
+  border-bottom: 4px solid rgba(0,0,0,0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .helios-flashbar--active {
+    animation: none;
+    background-color: #dc2626;
+  }
+}
