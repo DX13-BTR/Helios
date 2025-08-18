@@ -94,3 +94,8 @@ temp/
 docker-compose.override.yml
 .docker/
 .env.docker.local
+
+# local data dumps / app artifacts
+core_py/chat_history.json
+core_py/db/*.json
+core_py/archive/
