@@ -1,32 +1,47 @@
+# core_py/routes/chat_routes.py
 from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv
+from sqlalchemy import text
 import openai
-import sqlite3
 import os
 import pprint
 
+from core_py.db.session import get_session
+
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
-DB_PATH = os.getenv("DB_PATH")
-print(f"DB_PATH is: {DB_PATH}")
+router = APIRouter(prefix="/chat", tags=["chat"])
 
-router = APIRouter()
+DDL = text("""
+CREATE SCHEMA IF NOT EXISTS helios;
+CREATE TABLE IF NOT EXISTS helios.chat_history (
+  id BIGSERIAL PRIMARY KEY,
+  role TEXT,
+  content TEXT,
+  ts TIMESTAMPTZ DEFAULT NOW()
+);
+""")
 
-@router.post("/chat")
+def _ensure_tables():
+    with get_session() as s:
+        s.execute(DDL)
+        s.commit()
+
+@router.post("/completions")
 def chat_handler(payload: dict):
     try:
-        conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        _ensure_tables()
 
         # Fetch last 10 user/assistant messages from chat history
-        cursor.execute("""
-            SELECT role, content FROM chat_history
-            WHERE role IN ('user', 'assistant')
-            ORDER BY id DESC LIMIT 10
-        """)
-        history_rows = cursor.fetchall()
-        history_messages = [dict(row) for row in reversed(history_rows)]
+        with get_session() as s:
+            rows = s.execute(text("""
+                SELECT role, content
+                FROM helios.chat_history
+                WHERE role IN ('user', 'assistant')
+                ORDER BY id DESC
+                LIMIT 10
+            """)).mappings().all()
+            history_messages = [dict(r) for r in reversed(rows)]
 
         # Extract latest user message and task context
         incoming_messages = payload.get("messages", [])
@@ -34,7 +49,6 @@ def chat_handler(payload: dict):
 
         # 🧠 Format flat task context (from AIAdvicePanel.jsx)
         context_lines = []
-
         if isinstance(task_context, list) and task_context:
             context_lines.append("Here are the current tasks you should consider:")
             for t in task_context:
@@ -69,7 +83,7 @@ def chat_handler(payload: dict):
         print("🧾 Prompt preview:")
         pprint.pprint(all_messages)
 
-        # Chat Completion with GPT-4
+        # Chat Completion with GPT-4 (unchanged)
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=all_messages
@@ -78,13 +92,14 @@ def chat_handler(payload: dict):
         reply_obj = response.choices[0].message
         reply = {"role": reply_obj.role, "content": reply_obj.content}
 
-        # Store new messages into database
-        insert_query = "INSERT INTO chat_history (role, content) VALUES (?, ?)"
-        for msg in incoming_messages + [reply]:
-            cursor.execute(insert_query, (msg["role"], msg["content"]))
-
-        conn.commit()
-        conn.close()
+        # Store new messages into Postgres
+        with get_session() as s:
+            s.execute(text("""
+                INSERT INTO helios.chat_history (role, content)
+                VALUES (:role, :content)
+            """), [{"role": m["role"], "content": m["content"]}
+                   for m in incoming_messages + [reply]])
+            s.commit()
 
         return {"reply": reply}
 

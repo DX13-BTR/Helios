@@ -1,51 +1,64 @@
-from fastapi import APIRouter, HTTPException, Body
-import os
-import sqlite3
-import time
-import ollama
+# core_py/routes/advice_routes.py
+from fastapi import APIRouter, HTTPException
 from dotenv import load_dotenv
-from typing import List, Optional, Literal
 from pydantic import BaseModel
-from ..db.database import get_db_connection
+from typing import List, Optional, Literal
+from sqlalchemy import text
+import os, time
+import ollama
 
-# Load .env for DB path, model name, and context size
+from core_py.db.session import get_session
+
 load_dotenv(dotenv_path="core_py/.env")
-if not os.getenv("DB_PATH"):
-    raise ValueError("❌ DB_PATH not set. Check your .env file.")
 
 MODEL_NAME = os.getenv("ADVICE_MODEL", "llama3:pinned-adv")
 NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
 
-router = APIRouter()
+router = APIRouter(prefix="/advice", tags=["advice"])
 
 # -----------------------------
-# Existing /latest endpoint
+# /latest (pivot legacy.fss_advice kinds -> wide fields)
 # -----------------------------
 @router.get("/latest")
 def get_latest_advice():
-    conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT uc_advice, buffer_advice, tee_advice, spending_advice, savings_advice, created_at
-        FROM fss_advice
-        ORDER BY created_at DESC
-        LIMIT 1
-    """)
-    row = cursor.fetchone()
-    conn.close()
+    """
+    Returns: {
+      "uc": str|None, "buffer": str|None, "tee": str|None,
+      "spending": str|None, "savings": str|None,
+      "generated_at": ISO|None
+    }
+    """
+    kinds = ["uc", "buffer", "tee", "spending", "savings"]
+    placeholders = ",".join([f":k{i}" for i, _ in enumerate(kinds)])
+    params = {f"k{i}": k for i, k in enumerate(kinds)}
 
-    if not row:
-        return {}
+    # DISTINCT ON picks the latest row per kind by created_at
+    sql = f"""
+    SELECT DISTINCT ON (kind) kind, message, created_at
+    FROM legacy.fss_advice
+    WHERE kind IN ({placeholders})
+    ORDER BY kind, created_at DESC
+    """
+    out = {k: None for k in kinds}
+    latest_ts = None
+
+    with get_session() as s:
+        rows = s.execute(text(sql), params).mappings().all()
+        for r in rows:
+            k = (r["kind"] or "").strip().lower()
+            if k in out:
+                out[k] = r["message"]
+                ts = r.get("created_at")
+                if ts and (latest_ts is None or ts > latest_ts):
+                    latest_ts = ts
 
     return {
-        "uc": row["uc_advice"],
-        "buffer": row["buffer_advice"],
-        "tee": row["tee_advice"],
-        "spending": row["spending_advice"],
-        "savings": row["savings_advice"],
-        # NEW: expose the timestamp so the UI can show freshness
-        "generated_at": row["created_at"],
+        "uc": out["uc"],
+        "buffer": out["buffer"],
+        "tee": out["tee"],
+        "spending": out["spending"],
+        "savings": out["savings"],
+        "generated_at": latest_ts.isoformat() if latest_ts else None,
     }
 
 # -----------------------------
@@ -62,65 +75,76 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = "default"
 
 # -----------------------------
-# SQLite helpers for memory
+# Postgres helpers for memory
 # -----------------------------
-def _ensure_tables(conn: sqlite3.Connection):
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS advice_messages (
-        id INTEGER PRIMARY KEY,
-        ts INTEGER,
-        role TEXT,
-        text TEXT,
-        session_id TEXT
-    )
-    """)
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS advice_summaries (
-        id INTEGER PRIMARY KEY,
-        ts INTEGER,
-        summary TEXT,
-        session_id TEXT
-    )
-    """)
-    conn.commit()
+DDL = text("""
+CREATE SCHEMA IF NOT EXISTS helios;
 
-def _get_running_summary(conn, session_id: str) -> str:
-    cur = conn.execute(
-        "SELECT summary FROM advice_summaries WHERE session_id=? ORDER BY ts DESC LIMIT 1",
-        (session_id,)
-    )
-    row = cur.fetchone()
-    return row[0] if row else ""
+CREATE TABLE IF NOT EXISTS helios.advice_messages (
+  id BIGSERIAL PRIMARY KEY,
+  ts BIGINT,
+  role TEXT,
+  text TEXT,
+  session_id TEXT
+);
 
-def _save_running_summary(conn, session_id: str, summary: str):
-    conn.execute(
-        "INSERT INTO advice_summaries(ts, summary, session_id) VALUES(?,?,?)",
-        (int(time.time()), summary, session_id),
-    )
-    conn.commit()
+CREATE TABLE IF NOT EXISTS helios.advice_summaries (
+  id BIGSERIAL PRIMARY KEY,
+  ts BIGINT,
+  summary TEXT,
+  session_id TEXT
+);
+""")
 
-def _load_recent_messages(conn, session_id: str, limit: int = 20):
-    cur = conn.execute(
-        "SELECT role, text FROM advice_messages WHERE session_id=? ORDER BY ts DESC LIMIT ?",
-        (session_id, limit)
-    )
-    rows = cur.fetchall()
-    return [{"role": r[0], "content": r[1]} for r in rows[::-1]]
+def _ensure_tables_pg():
+    with get_session() as s:
+        s.execute(DDL)
+        s.commit()
 
-def _append_messages(conn, session_id: str, turns: List[dict]):
-    conn.executemany(
-        "INSERT INTO advice_messages(ts, role, text, session_id) VALUES(?,?,?,?)",
-        [(int(time.time()), t["role"], t["content"], session_id) for t in turns]
-    )
-    conn.commit()
+def _get_running_summary_pg(session_id: str) -> str:
+    with get_session() as s:
+        row = s.execute(text("""
+            SELECT summary FROM helios.advice_summaries
+            WHERE session_id=:sid
+            ORDER BY ts DESC LIMIT 1
+        """), {"sid": session_id}).scalar()
+        return row or ""
+
+def _save_running_summary_pg(session_id: str, summary: str):
+    with get_session() as s:
+        s.execute(text("""
+            INSERT INTO helios.advice_summaries(ts, summary, session_id)
+            VALUES (:ts, :summary, :sid)
+        """), {"ts": int(time.time()), "summary": summary, "sid": session_id})
+        s.commit()
+
+def _load_recent_messages_pg(session_id: str, limit: int = 20):
+    with get_session() as s:
+        rows = s.execute(text("""
+            SELECT role, text FROM helios.advice_messages
+            WHERE session_id=:sid
+            ORDER BY ts DESC
+            LIMIT :lim
+        """), {"sid": session_id, "lim": limit}).mappings().all()
+        return [{"role": r["role"], "content": r["text"]} for r in rows[::-1]]
+
+def _append_messages_pg(session_id: str, turns: List[dict]):
+    if not turns:
+        return
+    with get_session() as s:
+        s.execute(text("""
+            INSERT INTO helios.advice_messages(ts, role, text, session_id)
+            VALUES (:ts, :role, :text, :sid)
+        """), [{"ts": int(time.time()), "role": t["role"], "text": t["content"], "sid": session_id}
+               for t in turns])
+        s.commit()
 
 # -----------------------------
 # /chat endpoint for Advice Panel
 # -----------------------------
 @router.post("/chat")
 def chat(req: ChatRequest):
-    conn = get_db_connection()
-    _ensure_tables(conn)
+    _ensure_tables_pg()
     session_id = req.session_id or "default"
 
     # Build recent context
@@ -131,14 +155,14 @@ def chat(req: ChatRequest):
                    else ("assistant" if h.get("from") == "agent" else "user")
             hist_msgs.append({"role": role, "content": h.get("content") or h.get("text", "")})
 
-    recent_server = _load_recent_messages(conn, session_id, limit=20)
-    running_summary = _get_running_summary(conn, session_id)
+    recent_server = _load_recent_messages_pg(session_id, limit=20)
+    running_summary = _get_running_summary_pg(session_id)
 
-    # Task context summary
+    # Task context summary (short)
     key_ctx = []
     tc = req.task_context or []
     if isinstance(tc, list):
-        for t in tc[:20]:  # cap to first 20 tasks
+        for t in tc[:20]:
             title = t.get("title") or t.get("name") or str(t)
             src = t.get("source") or ""
             key_ctx.append(f"{src} {title}")
@@ -161,7 +185,7 @@ def chat(req: ChatRequest):
     assembled.extend(recent_server)
     assembled.extend([m.model_dump() for m in req.messages])
 
-    # Simple size limit (chars, rough token proxy)
+    # Trim (rough token control)
     MAX_CHARS = 18000
     total_chars = sum(len(m["content"]) for m in assembled)
     if total_chars > MAX_CHARS:
@@ -177,9 +201,7 @@ def chat(req: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ollama chat error: {e}")
 
-    reply = (res.get("message") or {}).get("content", "").strip()
-    if not reply:
-        reply = "I didn't get a response."
+    reply = (res.get("message") or {}).get("content", "").strip() or "I didn't get a response."
 
     # Save new turns
     new_turns = []
@@ -188,15 +210,15 @@ def chat(req: ChatRequest):
             new_turns.append({"role": m.role, "content": m.content})
     if reply:
         new_turns.append({"role": "assistant", "content": reply})
-    if new_turns:
-        _append_messages(conn, session_id, new_turns)
+    _append_messages_pg(session_id, new_turns)
 
-    # Periodically refresh running summary
-    cur = conn.execute(
-        "SELECT COUNT(*) FROM advice_messages WHERE session_id=? AND role='user'",
-        (session_id,)
-    )
-    user_count = cur.fetchone()[0]
+    # Periodic running-summary refresh
+    with get_session() as s:
+        user_count = s.execute(text("""
+            SELECT COUNT(*) FROM helios.advice_messages
+            WHERE session_id=:sid AND role='user'
+        """), {"sid": session_id}).scalar() or 0
+
     if user_count % 12 == 0 and user_count > 0:
         try:
             sum_res = ollama.chat(
@@ -211,7 +233,7 @@ def chat(req: ChatRequest):
             )
             summary_txt = (sum_res.get("message") or {}).get("content", "").strip()
             if summary_txt:
-                _save_running_summary(conn, session_id, summary_txt[:4000])
+                _save_running_summary_pg(session_id, summary_txt[:4000])
         except Exception:
             pass
 
