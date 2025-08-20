@@ -6,7 +6,7 @@ import logging
 import uuid
 from time import perf_counter
 from typing import Optional
-
+from sqlalchemy import text 
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +21,7 @@ load_dotenv()
 # -----------------------------------------------------------------------------
 DEV_MODE = os.getenv("ENV", "dev").lower() == "dev"
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS")  # comma-separated, e.g. http://localhost:5173,https://app.hel.io
+ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS")  # comma-separated
 DEFAULT_DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
 try:
@@ -37,7 +37,7 @@ logger = logging.getLogger("helios")
 from core_py.routes.calendar_routes import router as calendar_router
 from core_py.routes.tasks_routes import router as tasks_router
 from core_py.routes.fss_routes import router as fss_router
-from core_py.routes.chat_routes import router as chat_router  # imported if you decide to mount
+from core_py.routes.chat_routes import router as chat_router
 from core_py.routes.toggl_routes import router as toggl_router
 from core_py.routes.balances import router as balances_router
 from core_py.routes import clickup_webhook
@@ -50,8 +50,10 @@ from core_py.routes import reclaim_routes
 from core_py.routes import triage_routes
 from core_py.routes.contacts import router as contacts_router
 from core_py.routes import contacts_admin
-from core_py.db.sqlite_conn import get_conn, q_one
 from core_py.routes.schedule_routes import router as schedule_router
+
+# 🔑 NEW: use Postgres session instead of sqlite_conn
+from core_py.db.session import get_session
 
 # -----------------------------------------------------------------------------
 # FastAPI app
@@ -61,7 +63,7 @@ app = FastAPI(title="Helios Backend", version="8.0")
 # GZip for larger payloads
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 
-# CORS (safer defaults; configurable via ALLOW_ORIGINS)
+# CORS
 allow_origins = (
     [o.strip() for o in ALLOW_ORIGINS_ENV.split(",")] if ALLOW_ORIGINS_ENV
     else DEFAULT_DEV_ORIGINS
@@ -75,7 +77,7 @@ app.add_middleware(
 )
 
 # -----------------------------------------------------------------------------
-# Structured logging middleware (request id + latency)
+# Structured logging middleware
 # -----------------------------------------------------------------------------
 @app.middleware("http")
 async def _request_logging(request: Request, call_next):
@@ -85,7 +87,6 @@ async def _request_logging(request: Request, call_next):
     try:
         response = await call_next(request)
         status = response.status_code
-        # Attach request id on success responses
         try:
             response.headers["X-Request-ID"] = rid
         except Exception:
@@ -101,7 +102,7 @@ async def _request_logging(request: Request, call_next):
         )
 
 # -----------------------------------------------------------------------------
-# Global exception envelope (avoid HTML tracebacks)
+# Global exception envelope
 # -----------------------------------------------------------------------------
 @app.exception_handler(Exception)
 async def _unhandled_ex(request: Request, exc: Exception):
@@ -127,11 +128,10 @@ app.include_router(triage_routes.router, prefix="/api/triage")
 app.include_router(contacts_router, prefix="/api")
 app.include_router(contacts_admin.router)
 app.include_router(schedule_router, prefix="/api")
-# If/when you want chat routes mounted:
-#app.include_router(chat_router, prefix="/api/chat")
+# app.include_router(chat_router, prefix="/api/chat")
 
 # -----------------------------------------------------------------------------
-# Root and (guarded) exit endpoints
+# Root / Exit
 # -----------------------------------------------------------------------------
 @app.get("/")
 def root():
@@ -139,7 +139,6 @@ def root():
 
 @app.get("/api/exit")
 def exit_app():
-    # Only enabled in dev to avoid a footgun in prod
     if not DEV_MODE:
         return JSONResponse(status_code=403, content={"error": "disabled_in_prod"})
     return JSONResponse({"ok": True})
@@ -149,19 +148,14 @@ def exit_app():
 # -----------------------------------------------------------------------------
 @app.get("/healthz")
 def healthz():
-    # Liveness: process up and routing works
     return {"ok": True, "service": "Helios Backend v8.0"}
 
 @app.get("/readyz")
 def readyz():
-    # Readiness: add quick checks (e.g., DB ping). Expand to other deps as needed.
     try:
-        con = get_conn()
-        _ = q_one(con, "SELECT 1")
-        try:
-            con.close()
-        except Exception:
-            pass
+        from core_py.db.session import engine
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
         return {"ready": True}
     except Exception as e:
         return JSONResponse(status_code=503, content={"ready": False, "error": str(e)})
@@ -171,11 +165,10 @@ def readyz():
 # -----------------------------------------------------------------------------
 _clients: set[WebSocket] = set()
 _seq = 0
-MAX_WS_CLIENTS = 200  # tune as needed
+MAX_WS_CLIENTS = 200
 _metronome_task: Optional[asyncio.Task] = None
 
 async def _broadcast(stream: str, data: dict):
-    """Send a JSON message to all connected WS clients."""
     global _seq
     _seq += 1
     msg = json.dumps({
@@ -195,15 +188,12 @@ async def _broadcast(stream: str, data: dict):
 
 @app.websocket("/ws")
 async def ws_main(ws: WebSocket):
-    """Single multiplexed WS. Currently only sends ticks; extend with more streams as needed."""
     await ws.accept()
     if len(_clients) >= MAX_WS_CLIENTS:
-        # Too many clients; refuse new connection
         await ws.close(code=1001)
         return
     _clients.add(ws)
     try:
-        # Keep connection alive; we don't currently receive anything from the client
         while True:
             await asyncio.sleep(3600)
     except WebSocketDisconnect:
@@ -212,7 +202,6 @@ async def ws_main(ws: WebSocket):
         _clients.discard(ws)
 
 async def _metronome():
-    """Broadcast a 'tick' every 30 seconds (used by clients to recompute overdue state)."""
     while True:
         await asyncio.sleep(30)
         await _broadcast("ticks", {"type": "tick"})
