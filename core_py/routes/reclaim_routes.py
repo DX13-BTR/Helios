@@ -17,7 +17,27 @@ from pydantic import BaseModel, Field, constr
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 # ---- Helios DB helpers (existing sqlite util) ----
-from core_py.db.sqlite_conn import get_conn, q_one
+from sqlalchemy import text
+from core_py.db.session import get_session
+
+def _ensure_tables_pg():
+    with get_session() as s:
+        s.execute(text("""
+            CREATE SCHEMA IF NOT EXISTS helios;
+            CREATE TABLE IF NOT EXISTS helios.oauth_tokens(
+                provider TEXT PRIMARY KEY,
+                access_token TEXT,
+                refresh_token TEXT,
+                token_type TEXT,
+                expires_at BIGINT
+            );
+            CREATE TABLE IF NOT EXISTS helios.oauth_state(
+                state TEXT PRIMARY KEY,
+                code_verifier TEXT,
+                created_at BIGINT
+            );
+        """))
+        s.commit()
 
 router = APIRouter()
 log = logging.getLogger("reclaim")
@@ -75,43 +95,56 @@ def _ensure_tables():
         )
         """)
 
-def _save_tokens(access_token: str, refresh_token: Optional[str], token_type: str, expires_at: Optional[int]) -> None:
-    _ensure_tables()
-    with get_conn() as conn:
-        conn.execute("""
-            INSERT INTO oauth_tokens(provider, access_token, refresh_token, token_type, expires_at)
-            VALUES('reclaim', ?, ?, ?, ?)
-            ON CONFLICT(provider) DO UPDATE SET
-              access_token=excluded.access_token,
-              refresh_token=excluded.refresh_token,
-              token_type=excluded.token_type,
-              expires_at=excluded.expires_at
-        """, (access_token, refresh_token, token_type or "Bearer", expires_at))
 
-def _load_tokens() -> Optional[Tuple[str, Optional[str], str, Optional[int]]]:
-    _ensure_tables()
-    row = q_one("SELECT access_token, refresh_token, token_type, expires_at FROM oauth_tokens WHERE provider='reclaim'")
-    if not row:
-        return None
-    return row[0], row[1], row[2] or "Bearer", row[3]
+def _save_tokens(access_token: str, refresh_token: str, token_type: str | None, expires_at: int | None):
+    _ensure_tables_pg()
+    with get_session() as s:
+        s.execute(text("""
+            INSERT INTO helios.oauth_tokens(provider, access_token, refresh_token, token_type, expires_at)
+            VALUES ('reclaim', :at, :rt, :tt, :exp)
+            ON CONFLICT (provider) DO UPDATE SET
+              access_token=EXCLUDED.access_token,
+              refresh_token=EXCLUDED.refresh_token,
+              token_type=EXCLUDED.token_type,
+              expires_at=EXCLUDED.expires_at
+        """), {"at": access_token, "rt": refresh_token, "tt": (token_type or "Bearer"), "exp": expires_at})
+        s.commit()
 
-def _save_state(state: str, code_verifier: str) -> None:
-    _ensure_tables()
-    with get_conn() as conn:
-        conn.execute("""
-            INSERT INTO oauth_state(state, code_verifier, created_at) VALUES(?, ?, strftime('%s','now'))
-        """, (state, code_verifier))
-
-def _pop_state(state: str) -> Optional[str]:
-    _ensure_tables()
-    with get_conn() as conn:
-        cur = conn.execute("SELECT code_verifier FROM oauth_state WHERE state=?", (state,))
-        row = cur.fetchone()
+def _load_tokens():
+    _ensure_tables_pg()
+    with get_session() as s:
+        row = s.execute(text("""
+            SELECT access_token, refresh_token, token_type, COALESCE(expires_at, 0)
+            FROM helios.oauth_tokens
+            WHERE provider='reclaim'
+        """)).fetchone()
         if not row:
             return None
-        code_verifier = row[0]
-        conn.execute("DELETE FROM oauth_state WHERE state=?", (state,))
-        return code_verifier
+        return row[0], row[1], (row[2] or "Bearer"), int(row[3] or 0)
+
+def _save_state(state: str, code_verifier: str) -> None:
+    _ensure_tables_pg()
+    with get_session() as s:
+        s.execute(text("""
+            INSERT INTO helios.oauth_state(state, code_verifier, created_at)
+            VALUES(:st, :cv, EXTRACT(EPOCH FROM NOW())::bigint)
+            ON CONFLICT (state) DO UPDATE SET
+              code_verifier=EXCLUDED.code_verifier,
+              created_at=EXCLUDED.created_at
+        """), {"st": state, "cv": code_verifier})
+        s.commit()
+
+def _pop_state(state: str) -> str | None:
+    _ensure_tables_pg()
+    with get_session() as s:
+        row = s.execute(text("SELECT code_verifier FROM helios.oauth_state WHERE state=:st"),
+                        {"st": state}).fetchone()
+        if not row:
+            return None
+        s.execute(text("DELETE FROM helios.oauth_state WHERE state=:st"), {"st": state})
+        s.commit()
+        return row[0]
+
 
 # =========================
 # PKCE helpers
