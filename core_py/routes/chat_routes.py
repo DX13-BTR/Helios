@@ -6,7 +6,7 @@ import openai
 import os
 import pprint
 
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS helios.chat_history (
 """)
 
 def _ensure_tables():
-    with get_session() as s:
+    with db_session() as s:
         s.execute(DDL)
         s.commit()
 
@@ -33,7 +33,7 @@ def chat_handler(payload: dict):
         _ensure_tables()
 
         # Fetch last 10 user/assistant messages from chat history
-        with get_session() as s:
+        with db_session() as s:
             rows = s.execute(text("""
                 SELECT role, content
                 FROM helios.chat_history
@@ -93,7 +93,7 @@ def chat_handler(payload: dict):
         reply = {"role": reply_obj.role, "content": reply_obj.content}
 
         # Store new messages into Postgres
-        with get_session() as s:
+        with db_session() as s:
             s.execute(text("""
                 INSERT INTO helios.chat_history (role, content)
                 VALUES (:role, :content)

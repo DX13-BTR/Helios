@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 from core_py.db.triaged_tasks_pg import upsert_triaged_tasks, top_triaged_tasks
 from core_py.db.task_meta_pg import upsert_task_meta, get_task_meta
 from core_py.integrations.clickup_client import ClickUpClient
@@ -102,7 +102,7 @@ def update_task_status(id: str, request: UpdateStatusRequest):
 
     # 2) Best-effort mirror in Postgres
     try:
-        with get_session() as s:
+        with db_session() as s:
             s.execute(text("UPDATE helios.triaged_tasks SET status = :st WHERE id = :id"),
                       {"st": request.status, "id": id})
             s.commit()
@@ -228,7 +228,7 @@ def get_fixed_date_tasks():
             return None
 
     try:
-        with get_session() as s:
+        with db_session() as s:
             s.execute(text("""
                 CREATE SCHEMA IF NOT EXISTS helios;
                 CREATE TABLE IF NOT EXISTS helios.task_meta (
@@ -340,7 +340,7 @@ def bulk_upsert_task_meta(items: List[TaskMetaIn]):
 def db_debug():
     """Confirm Postgres connectivity and basic counts."""
     try:
-        with get_session() as s:
+        with db_session() as s:
             ok = s.execute(text("SELECT 1")).scalar()
             triaged_count = s.execute(text("SELECT COUNT(*) FROM helios.triaged_tasks")).scalar()
             meta_count = s.execute(text("SELECT COUNT(*) FROM helios.task_meta")).scalar()

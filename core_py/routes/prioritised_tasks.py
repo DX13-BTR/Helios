@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ def get_prioritised_tasks():
     """)
 
     try:
-        with get_session() as s:
+        with db_session() as s:
             rows = s.execute(sql).mappings().all()
 
         return [

@@ -50,9 +50,8 @@ from core_py.routes import triage_routes
 from core_py.routes.contacts import router as contacts_router
 from core_py.routes import contacts_admin
 from core_py.routes.schedule_routes import router as schedule_router
-
-
-from core_py.db.session import get_session
+from core_py.routes.email_tasks import router as email_tasks_router
+from core_py.db.session import get_session, db_session
 
 # -----------------------------------------------------------------------------
 # FastAPI app
@@ -127,6 +126,7 @@ app.include_router(triage_routes.router, prefix="/api/triage")
 app.include_router(contacts_router, prefix="/api")
 app.include_router(contacts_admin.router)
 app.include_router(schedule_router, prefix="/api")
+app.include_router(email_tasks_router)
 
 
 # -----------------------------------------------------------------------------

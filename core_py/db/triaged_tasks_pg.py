@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from typing import Iterable, Mapping
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 DDL = """
 CREATE SCHEMA IF NOT EXISTS helios;
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS helios.triaged_tasks (
 
 def upsert_triaged_tasks(rows: Iterable[Mapping]):
     """rows: iterable of dicts with keys id,name,due_date,priority,score,status"""
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text(DDL))
         # Clear and reinsert (keeps logic identical to your current flow)
         s.execute(text("DELETE FROM helios.triaged_tasks"))
@@ -34,7 +34,7 @@ def upsert_triaged_tasks(rows: Iterable[Mapping]):
         s.commit()
 
 def top_triaged_tasks(limit: int = 3):
-    with get_session() as s:
+    with db_session() as s:
         rows = s.execute(text("""
             SELECT id, name, due_date, priority, score, status
             FROM helios.triaged_tasks

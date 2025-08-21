@@ -18,10 +18,10 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 
 # ---- Helios DB helpers (existing ite util) ----
 from sqlalchemy import text
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 def _ensure_tables_pg():
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text("""
             CREATE SCHEMA IF NOT EXISTS helios;
             CREATE TABLE IF NOT EXISTS helios.oauth_tokens(
@@ -98,7 +98,7 @@ def _ensure_tables():
 
 def _save_tokens(access_token: str, refresh_token: str, token_type: str | None, expires_at: int | None):
     _ensure_tables_pg()
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text("""
             INSERT INTO helios.oauth_tokens(provider, access_token, refresh_token, token_type, expires_at)
             VALUES ('reclaim', :at, :rt, :tt, :exp)
@@ -112,7 +112,7 @@ def _save_tokens(access_token: str, refresh_token: str, token_type: str | None, 
 
 def _load_tokens():
     _ensure_tables_pg()
-    with get_session() as s:
+    with db_session() as s:
         row = s.execute(text("""
             SELECT access_token, refresh_token, token_type, COALESCE(expires_at, 0)
             FROM helios.oauth_tokens
@@ -124,7 +124,7 @@ def _load_tokens():
 
 def _save_state(state: str, code_verifier: str) -> None:
     _ensure_tables_pg()
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text("""
             INSERT INTO helios.oauth_state(state, code_verifier, created_at)
             VALUES(:st, :cv, EXTRACT(EPOCH FROM NOW())::bigint)
@@ -136,7 +136,7 @@ def _save_state(state: str, code_verifier: str) -> None:
 
 def _pop_state(state: str) -> str | None:
     _ensure_tables_pg()
-    with get_session() as s:
+    with db_session() as s:
         row = s.execute(text("SELECT code_verifier FROM helios.oauth_state WHERE state=:st"),
                         {"st": state}).fetchone()
         if not row:

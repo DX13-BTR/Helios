@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 from core_py.db.database import get_engine
 from core_py.models import Client, ClientEmail, ClientDomain
 
-router = APIRouter(prefix="/contacts", tags=["contacts"])
+router = APIRouter(tags=["contacts"])
 
-# Create a plain Session bound to the shared engine (no  helpers)
+# Create a plain Session bound to the shared engine (no helpers)
 _engine = get_engine()
 
 def db_session() -> Session:
@@ -47,6 +47,11 @@ class DomainOut(BaseModel):
     client_id: str
     domain: str
     wildcard: bool
+
+# NEW: allowlist response (for the email triage client)
+class AllowlistResponse(BaseModel):
+    emails: List[str]
+    domains: List[str]
 
 
 # ---------- Routes ----------
@@ -145,3 +150,16 @@ def add_client_domain(client_id: str, payload: DomainIn):
         s.commit()
         d = s.get(ClientDomain, d.id)
         return DomainOut(id=d.id, client_id=d.client_id, domain=d.domain, wildcard=d.wildcard)
+
+
+# NEW: single allowlist endpoint for the triage client
+@router.get("/allowlist", response_model=AllowlistResponse)
+def get_allowlist():
+    with db_session() as s:
+        email_rows = s.execute(select(ClientEmail.email)).scalars().all()
+        domain_rows = s.execute(select(ClientDomain.domain)).scalars().all()
+
+    # normalize, de-duplicate, sort for stable client caching
+    emails = sorted({(e or "").strip().lower() for e in email_rows if e})
+    domains = sorted({(d or "").strip().lower() for d in domain_rows if d})
+    return AllowlistResponse(emails=emails, domains=domains)

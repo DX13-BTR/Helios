@@ -104,3 +104,22 @@ class FssSummary(Base):
     net_flow = Column(Float, nullable=False)
     closing_balance = Column(Float, nullable=False)
     created_at = Column(DateTime, nullable=False)
+
+# --- Email task + dedup (for triage → Helios) ---
+
+class ProcessedEmail(Base):
+    __tablename__ = "processed_emails"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    message_id = Column(String, nullable=False, unique=True, index=True)
+    processed_at = Column(DateTime, nullable=False)
+
+class EmailTask(Base):
+    __tablename__ = "email_tasks"
+    id = Column(String, primary_key=True)            # use Gmail msg id as primary key
+    client_id = Column(String, nullable=True, index=True)
+    sender = Column(String, nullable=False)
+    subject = Column(String, nullable=False)
+    snippet = Column(String, nullable=True)
+    body_html = Column(String, nullable=True)
+    body_text = Column(String, nullable=True)
+    created_at = Column(DateTime, nullable=False)

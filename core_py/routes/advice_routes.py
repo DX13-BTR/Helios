@@ -9,7 +9,7 @@ from sqlalchemy.exc import ProgrammingError, OperationalError
 import os, time
 import ollama
 
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 router = APIRouter(prefix="/advice", tags=["advice"])
 
@@ -40,7 +40,7 @@ def _table_has_column(schema: str, table: str, col: str) -> bool:
         FROM information_schema.columns
         WHERE table_schema = :sch AND table_name = :tbl AND column_name = :col
     """)
-    with get_session() as s:
+    with db_session() as s:
         return bool(s.execute(q, {"sch": schema, "tbl": table, "col": col}).scalar())
 
 # -----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ def get_latest_advice():
     """
     has_created = _table_has_column("legacy", "fss_advice", "created_at")
     try:
-        with get_session() as s:
+        with db_session() as s:
             if has_created:
                 row = s.execute(text("""
                     SELECT *
@@ -84,7 +84,7 @@ def get_all_advice(limit: int = 20):
     """
     has_created = _table_has_column("legacy", "fss_advice", "created_at")
     try:
-        with get_session() as s:
+        with db_session() as s:
             if has_created:
                 rows = s.execute(text("""
                     SELECT * FROM legacy.fss_advice
@@ -126,12 +126,12 @@ CREATE TABLE IF NOT EXISTS helios.advice_summaries (
 """)
 
 def _ensure_tables_pg():
-    with get_session() as s:
+    with db_session() as s:
         s.execute(DDL)
         s.commit()
 
 def _get_running_summary_pg(session_id: str) -> str:
-    with get_session() as s:
+    with db_session() as s:
         row = s.execute(text("""
             SELECT summary FROM helios.advice_summaries
             WHERE session_id=:sid
@@ -140,7 +140,7 @@ def _get_running_summary_pg(session_id: str) -> str:
         return row or ""
 
 def _save_running_summary_pg(session_id: str, summary: str):
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text("""
             INSERT INTO helios.advice_summaries(ts, summary, session_id)
             VALUES (:ts, :summary, :sid)
@@ -148,7 +148,7 @@ def _save_running_summary_pg(session_id: str, summary: str):
         s.commit()
 
 def _load_recent_messages_pg(session_id: str, limit: int = 20):
-    with get_session() as s:
+    with db_session() as s:
         rows = s.execute(text("""
             SELECT role, text FROM helios.advice_messages
             WHERE session_id=:sid
@@ -160,7 +160,7 @@ def _load_recent_messages_pg(session_id: str, limit: int = 20):
 def _append_messages_pg(session_id: str, turns: List[Dict[str, str]]):
     if not turns:
         return
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text("""
             INSERT INTO helios.advice_messages(ts, role, text, session_id)
             VALUES (:ts, :role, :text, :sid)
@@ -248,7 +248,7 @@ def chat(req: ChatRequest):
     _append_messages_pg(session_id, new_turns)
 
     # periodic summary (every 12 user msgs)
-    with get_session() as s:
+    with db_session() as s:
         user_count = s.execute(text("""
             SELECT COUNT(*) FROM helios.advice_messages
             WHERE session_id=:sid AND role='user'

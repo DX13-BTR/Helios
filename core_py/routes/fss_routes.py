@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 router = APIRouter(prefix="/fss", tags=["fss"])
 
@@ -34,7 +34,7 @@ def _to_utc_iso(ts: Optional[Any]) -> Optional[str]:
 
 def _safe_query_list(sql: str, params: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
     try:
-        with get_session() as s:
+        with db_session() as s:
             rows = s.execute(text(sql), params or {}).mappings().all()
             return [dict(r) for r in rows]
     except Exception as e:
@@ -45,7 +45,7 @@ def _safe_query_list(sql: str, params: Dict[str, Any] | None = None) -> List[Dic
 
 def _safe_query_one(sql: str, params: Dict[str, Any] | None = None) -> Optional[Dict[str, Any]]:
     try:
-        with get_session() as s:
+        with db_session() as s:
             row = s.execute(text(sql), params or {}).mappings().fetchone()
             return dict(row) if row else None
     except Exception as e:

@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from typing import Optional, Mapping
-from core_py.db.session import get_session
+from core_py.db.session import get_session, db_session
 
 DDL = """
 CREATE SCHEMA IF NOT EXISTS helios;
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS helios.task_meta (
 
 def upsert_task_meta(meta: Mapping):
     """meta keys: task_id, task_type, deadline_type, fixed_date, calendar_blocked, recurrence_pattern, client_code"""
-    with get_session() as s:
+    with db_session() as s:
         s.execute(text(DDL))
         s.execute(text("""
             INSERT INTO helios.task_meta
@@ -34,7 +34,7 @@ def upsert_task_meta(meta: Mapping):
         s.commit()
 
 def get_task_meta(task_id: str) -> Optional[dict]:
-    with get_session() as s:
+    with db_session() as s:
         row = s.execute(text("""
             SELECT task_id, task_type, deadline_type, fixed_date, calendar_blocked, recurrence_pattern, client_code
             FROM helios.task_meta WHERE task_id = :task_id

@@ -11,7 +11,7 @@ def calculate_fss_summary():
     and insert a row into fss_summary (Postgres).
     """
 
-    with get_session() as session:
+    with db_session() as session:
         # Fetch transactions
         efkaristo_tx = session.query(
             TransactionEfkaristo.date,
