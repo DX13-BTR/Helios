@@ -1,5 +1,5 @@
 # core_py/models.py
-from sqlalchemy import Column, String, Boolean, DateTime, Integer, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, String, Boolean, DateTime, Integer, ForeignKey, UniqueConstraint, Float
 from sqlalchemy.orm import relationship
 from core_py.db import Base
 
@@ -59,3 +59,48 @@ class TaskMeta(Base):
 
     # Optional client code tag
     client_code = Column(String(20))
+
+class TransactionEfkaristo(Base):
+    __tablename__ = "transaction_efkaristo"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    date = Column(DateTime, nullable=False)
+    amount = Column(Float, nullable=False)
+    direction = Column(String(10), nullable=False)  # "IN" or "OUT"
+    counterparty = Column(String, nullable=True)
+    source = Column(String, nullable=True)
+    status = Column(String(20), nullable=True)
+
+
+class TransactionPersonal(Base):
+    __tablename__ = "transaction_personal"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    date = Column(DateTime, nullable=False)
+    amount = Column(Float, nullable=False)
+    direction = Column(String(10), nullable=False)  # "IN" or "OUT"
+    counterparty = Column(String, nullable=True)
+    source = Column(String, nullable=True)
+    status = Column(String(20), nullable=True)
+
+
+class Balance(Base):
+    __tablename__ = "balance"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_name = Column(String, nullable=False)
+    balance = Column(Float, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+
+
+class FssSummary(Base):
+    __tablename__ = "fss_summary"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    week_ending = Column(DateTime, nullable=False)
+    total_transactions = Column(Integer, nullable=False)
+    total_incoming = Column(Float, nullable=False)
+    total_outgoing = Column(Float, nullable=False)
+    net_flow = Column(Float, nullable=False)
+    closing_balance = Column(Float, nullable=False)
+    created_at = Column(DateTime, nullable=False)

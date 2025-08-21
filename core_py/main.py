@@ -37,7 +37,6 @@ logger = logging.getLogger("helios")
 from core_py.routes.calendar_routes import router as calendar_router
 from core_py.routes.tasks_routes import router as tasks_router
 from core_py.routes.fss_routes import router as fss_router
-from core_py.routes.chat_routes import router as chat_router
 from core_py.routes.toggl_routes import router as toggl_router
 from core_py.routes.balances import router as balances_router
 from core_py.routes import clickup_webhook
@@ -128,7 +127,7 @@ app.include_router(triage_routes.router, prefix="/api/triage")
 app.include_router(contacts_router, prefix="/api")
 app.include_router(contacts_admin.router)
 app.include_router(schedule_router, prefix="/api")
-# app.include_router(chat_router, prefix="/api/chat")
+
 
 # -----------------------------------------------------------------------------
 # Root / Exit
