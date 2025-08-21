@@ -1,82 +1,111 @@
 # core_py/routes/advice_routes.py
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Literal
+
 from fastapi import APIRouter, HTTPException
-from dotenv import load_dotenv
 from pydantic import BaseModel
-from typing import List, Optional, Literal
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError, OperationalError
 import os, time
 import ollama
 
 from core_py.db.session import get_session
 
-load_dotenv(dotenv_path="core_py/.env")
-
-MODEL_NAME = os.getenv("ADVICE_MODEL", "llama3:pinned-adv")
-NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
-
 router = APIRouter(prefix="/advice", tags=["advice"])
 
-# -----------------------------
-# /latest (pivot legacy.fss_advice kinds -> wide fields)
-# -----------------------------
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+def _to_utc_iso(ts: Optional[Any]) -> Optional[str]:
+    if ts is None:
+        return None
+    try:
+        if isinstance(ts, (int, float)) or str(ts).isdigit():
+            v = int(float(ts))
+            if v < 10**11:
+                v *= 1000
+            return datetime.fromtimestamp(v / 1000.0, tz=timezone.utc).isoformat()
+        s = str(ts)
+        if "T" in s or "-" in s:
+            return datetime.fromisoformat(s.replace("Z", "+00:00")).astimezone(
+                timezone.utc
+            ).isoformat()
+    except Exception:
+        pass
+    return None
+
+def _table_has_column(schema: str, table: str, col: str) -> bool:
+    q = text("""
+        SELECT COUNT(*) > 0
+        FROM information_schema.columns
+        WHERE table_schema = :sch AND table_name = :tbl AND column_name = :col
+    """)
+    with get_session() as s:
+        return bool(s.execute(q, {"sch": schema, "tbl": table, "col": col}).scalar())
+
+# -----------------------------------------------------------------------------
+# /latest — tolerant of schema (no id/kind assumptions)
+# -----------------------------------------------------------------------------
 @router.get("/latest")
 def get_latest_advice():
     """
-    Returns: {
-      "uc": str|None, "buffer": str|None, "tee": str|None,
-      "spending": str|None, "savings": str|None,
-      "generated_at": ISO|None
-    }
+    Return the most recent row from legacy.fss_advice.
+    - If 'created_at' exists -> ORDER BY created_at DESC
+    - Else -> just LIMIT 1 (no ordering guarantees)
+    Returns {"advice": {...}} or {} if none.
     """
-    kinds = ["uc", "buffer", "tee", "spending", "savings"]
-    placeholders = ",".join([f":k{i}" for i, _ in enumerate(kinds)])
-    params = {f"k{i}": k for i, k in enumerate(kinds)}
+    has_created = _table_has_column("legacy", "fss_advice", "created_at")
+    try:
+        with get_session() as s:
+            if has_created:
+                row = s.execute(text("""
+                    SELECT *
+                    FROM legacy.fss_advice
+                    ORDER BY created_at DESC NULLS LAST
+                    LIMIT 1
+                """)).mappings().fetchone()
+            else:
+                row = s.execute(text("""
+                    SELECT * FROM legacy.fss_advice LIMIT 1
+                """)).mappings().fetchone()
+        if not row:
+            return {}
+        obj = dict(row)
+        if "created_at" in obj:
+            obj["created_at"] = _to_utc_iso(obj["created_at"])
+        return {"advice": obj}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DB error: {e}")
 
-    # DISTINCT ON picks the latest row per kind by created_at
-    sql = f"""
-    SELECT DISTINCT ON (kind) kind, message, created_at
-    FROM legacy.fss_advice
-    WHERE kind IN ({placeholders})
-    ORDER BY kind, created_at DESC
+@router.get("/all")
+def get_all_advice(limit: int = 20):
     """
-    out = {k: None for k in kinds}
-    latest_ts = None
+    Return last N rows from legacy.fss_advice (best-effort ordering).
+    """
+    has_created = _table_has_column("legacy", "fss_advice", "created_at")
+    try:
+        with get_session() as s:
+            if has_created:
+                rows = s.execute(text("""
+                    SELECT * FROM legacy.fss_advice
+                    ORDER BY created_at DESC NULLS LAST
+                    LIMIT :lim
+                """), {"lim": limit}).mappings().all()
+            else:
+                rows = s.execute(text("""
+                    SELECT * FROM legacy.fss_advice LIMIT :lim
+                """), {"lim": limit}).mappings().all()
+        out = [dict(r) for r in rows]
+        for r in out:
+            if "created_at" in r:
+                r["created_at"] = _to_utc_iso(r["created_at"])
+        return {"advice": out}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DB error: {e}")
 
-    with get_session() as s:
-        rows = s.execute(text(sql), params).mappings().all()
-        for r in rows:
-            k = (r["kind"] or "").strip().lower()
-            if k in out:
-                out[k] = r["message"]
-                ts = r.get("created_at")
-                if ts and (latest_ts is None or ts > latest_ts):
-                    latest_ts = ts
-
-    return {
-        "uc": out["uc"],
-        "buffer": out["buffer"],
-        "tee": out["tee"],
-        "spending": out["spending"],
-        "savings": out["savings"],
-        "generated_at": latest_ts.isoformat() if latest_ts else None,
-    }
-
-# -----------------------------
-# Chat models & schemas
-# -----------------------------
-class Msg(BaseModel):
-    role: Literal["user", "assistant", "system"]
-    content: str
-
-class ChatRequest(BaseModel):
-    messages: List[Msg]
-    history: Optional[List[dict]] = None
-    task_context: Optional[list] = None
-    session_id: Optional[str] = "default"
-
-# -----------------------------
-# Postgres helpers for memory
-# -----------------------------
+# -----------------------------------------------------------------------------
+# Chat memory (Postgres)
+# -----------------------------------------------------------------------------
 DDL = text("""
 CREATE SCHEMA IF NOT EXISTS helios;
 
@@ -128,7 +157,7 @@ def _load_recent_messages_pg(session_id: str, limit: int = 20):
         """), {"sid": session_id, "lim": limit}).mappings().all()
         return [{"role": r["role"], "content": r["text"]} for r in rows[::-1]]
 
-def _append_messages_pg(session_id: str, turns: List[dict]):
+def _append_messages_pg(session_id: str, turns: List[Dict[str, str]]):
     if not turns:
         return
     with get_session() as s:
@@ -139,26 +168,34 @@ def _append_messages_pg(session_id: str, turns: List[dict]):
                for t in turns])
         s.commit()
 
-# -----------------------------
-# /chat endpoint for Advice Panel
-# -----------------------------
+# -----------------------------------------------------------------------------
+# /chat — Ollama-based advice chat with Postgres memory (AS IS)
+# -----------------------------------------------------------------------------
+class Msg(BaseModel):
+    role: Literal["user", "assistant", "system"]
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[Msg]
+    history: Optional[List[dict]] = None
+    task_context: Optional[list] = None
+    session_id: Optional[str] = "default"
+
+MODEL_NAME = os.getenv("ADVICE_MODEL", "llama3:pinned-adv")
+NUM_CTX = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
+
 @router.post("/chat")
 def chat(req: ChatRequest):
     _ensure_tables_pg()
     session_id = req.session_id or "default"
 
-    # Build recent context
-    hist_msgs: List[Msg] = []
-    if req.history:
-        for h in req.history[-20:]:
-            role = h.get("role") if h.get("role") in ("user", "assistant") \
-                   else ("assistant" if h.get("from") == "agent" else "user")
-            hist_msgs.append({"role": role, "content": h.get("content") or h.get("text", "")})
-
+    # recent convo from DB
     recent_server = _load_recent_messages_pg(session_id, limit=20)
+
+    # optional running summary
     running_summary = _get_running_summary_pg(session_id)
 
-    # Task context summary (short)
+    # short task context (optional)
     key_ctx = []
     tc = req.task_context or []
     if isinstance(tc, list):
@@ -168,8 +205,8 @@ def chat(req: ChatRequest):
             key_ctx.append(f"{src} {title}")
     key_ctx_str = "\n".join(key_ctx)[:1200]
 
-    # System prompts
-    assembled: List[dict] = [{
+    # assemble prompt
+    assembled: List[Dict[str, str]] = [{
         "role": "system",
         "content": (
             "You are Helios Advice. Be concise, concrete, cost-aware, "
@@ -181,18 +218,16 @@ def chat(req: ChatRequest):
         assembled.append({"role": "system", "content": f"[Running Summary]\n{running_summary}"})
     if key_ctx_str:
         assembled.append({"role": "system", "content": f"[Task Context]\n{key_ctx_str}"})
-    assembled.extend(hist_msgs)
     assembled.extend(recent_server)
     assembled.extend([m.model_dump() for m in req.messages])
 
-    # Trim (rough token control)
+    # rough token control
     MAX_CHARS = 18000
     total_chars = sum(len(m["content"]) for m in assembled)
     if total_chars > MAX_CHARS:
         assembled = [m for m in assembled if m["role"] == "system"] + assembled[-20:]
 
     try:
-        print(f"[DEBUG] Using Ollama model={MODEL_NAME} num_ctx={NUM_CTX}")
         res = ollama.chat(
             model=MODEL_NAME,
             messages=assembled,
@@ -203,22 +238,21 @@ def chat(req: ChatRequest):
 
     reply = (res.get("message") or {}).get("content", "").strip() or "I didn't get a response."
 
-    # Save new turns
-    new_turns = []
+    # persist turns
+    new_turns: List[Dict[str, str]] = []
     for m in req.messages:
-        if m.role in ("user", "assistant"):
+        if m.role in ("user", "assistant", "system"):
             new_turns.append({"role": m.role, "content": m.content})
     if reply:
         new_turns.append({"role": "assistant", "content": reply})
     _append_messages_pg(session_id, new_turns)
 
-    # Periodic running-summary refresh
+    # periodic summary (every 12 user msgs)
     with get_session() as s:
         user_count = s.execute(text("""
             SELECT COUNT(*) FROM helios.advice_messages
             WHERE session_id=:sid AND role='user'
         """), {"sid": session_id}).scalar() or 0
-
     if user_count % 12 == 0 and user_count > 0:
         try:
             sum_res = ollama.chat(
