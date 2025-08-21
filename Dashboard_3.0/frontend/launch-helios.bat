@@ -13,7 +13,7 @@ REM ─── Wait for servers to boot ─────────────�
 timeout /t 4 >nul
 
 REM ─── Launch ngrok tunnel ─────────────────────────────────
-start "" /min cmd /c "C:\ProgramData\chocolatey\bin\ngrok.exe http --domain=helios.ngrok.dev 3333"
+start "" /min cmd /c "C:\ProgramData\chocolatey\bin\ngrok.exe http --domain=helios.ngrok.dev 5173"
 
 REM ─── Wait for ngrok to stabilise ─────────────────────────
 timeout /t 4 >nul
