@@ -12,7 +12,7 @@ from core_py.models import Client, ClientEmail, ClientDomain
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
-# Create a plain Session bound to the shared engine (no sqlite helpers)
+# Create a plain Session bound to the shared engine (no  helpers)
 _engine = get_engine()
 
 def db_session() -> Session:

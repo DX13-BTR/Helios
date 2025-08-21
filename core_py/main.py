@@ -51,7 +51,7 @@ from core_py.routes.contacts import router as contacts_router
 from core_py.routes import contacts_admin
 from core_py.routes.schedule_routes import router as schedule_router
 
-# 🔑 NEW: use Postgres session instead of sqlite_conn
+
 from core_py.db.session import get_session
 
 # -----------------------------------------------------------------------------

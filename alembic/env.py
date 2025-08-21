@@ -40,9 +40,6 @@ def _resolve_db_url() -> str:
         return env_url
     return config.get_main_option("sqlalchemy.url")
 
-def _is_sqlite(url: str) -> bool:
-    return url.startswith("sqlite")
-
 # --- Offline migration runner ---
 def run_migrations_offline() -> None:
     url = _resolve_db_url()
@@ -55,7 +52,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         compare_type=True,
         dialect_opts={"paramstyle": "named"},
-        render_as_batch=_is_sqlite(url),  # important for SQLite schema changes
+        render_as_batch=False
     )
 
     with context.begin_transaction():
@@ -78,7 +75,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             include_object=include_object,
             compare_type=True,
-            render_as_batch=_is_sqlite(url),  # important for SQLite schema changes
+            render_as_batch=False
         )
 
         with context.begin_transaction():

@@ -12,7 +12,8 @@ import core_py.models  # noqa: F401  (side-effect: table registration)
 if not os.path.exists(DB_PATH):
     raise SystemExit(f"DB file not found: {DB_PATH}")
 
-engine = create_engine(f"sqlite:///{DB_PATH}")
+from core_py.settings import settings
+engine = create_engine(settings.DB_URL)
 insp = inspect(engine)
 
 db_tables = set(insp.get_table_names())

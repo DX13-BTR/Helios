@@ -16,7 +16,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field, constr
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
-# ---- Helios DB helpers (existing sqlite util) ----
+# ---- Helios DB helpers (existing ite util) ----
 from sqlalchemy import text
 from core_py.db.session import get_session
 
