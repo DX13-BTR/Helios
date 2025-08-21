@@ -1,50 +1,130 @@
+# core_py/routes/clickup_webhook.py
+
+from datetime import datetime
+from typing import Any, Dict, Optional
+
 from fastapi import APIRouter, Request, HTTPException
-import os
-import requests
-from core_py.triage_tasks import score_task
-from dotenv import load_dotenv
-from core_py.db.database import insert_or_replace_task
+from sqlalchemy import text
 
-load_dotenv()
+from core_py.db.database import get_engine  # uses your DB engine factory
 
-CLICKUP_TOKEN = os.getenv("CLICKUP_API_KEY")
 router = APIRouter()
 
-@router.post("/webhook")
-async def handle_clickup_webhook(request: Request):
+# --- Ensure the target table exists (safe, idempotent) ---
+# If you already manage schema elsewhere, you can remove this block.
+_ddl = """
+CREATE TABLE IF NOT EXISTS triaged_tasks (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  priority INT NULL,
+  due_date TIMESTAMPTZ NULL,
+  score NUMERIC NULL,
+  status TEXT NULL,
+  is_urgent BOOLEAN DEFAULT FALSE,
+  section TEXT NULL,
+  reason TEXT NULL
+);
+"""
+_engine = get_engine()
+with _engine.begin() as _conn:
+    _conn.execute(text(_ddl))
+
+
+def _coerce_bool(v: Any) -> bool:
+    if isinstance(v, bool):
+        return v
+    if v is None:
+        return False
+    if isinstance(v, (int, float)):
+        return bool(v)
+    s = str(v).strip().lower()
+    return s in {"1", "true", "yes", "y", "on"}
+
+
+def _coerce_datetime(v: Any) -> Optional[datetime]:
+    if v is None or v == "":
+        return None
+    if isinstance(v, datetime):
+        return v
+    # ClickUp webhooks sometimes send millis or ISO strings
     try:
-        payload = await request.json()
-        print("🔍 Raw webhook payload received:")
-        print(payload)
+        # int milliseconds since epoch
+        if isinstance(v, (int, float)) or (isinstance(v, str) and v.isdigit()):
+            ms = int(v)
+            # ClickUp often sends ms; if it's seconds, datetime will still parse reasonably
+            if ms > 10_000_000_000:  # heuristic: treat as milliseconds
+                return datetime.utcfromtimestamp(ms / 1000.0)
+            return datetime.utcfromtimestamp(ms)
+    except Exception:
+        pass
+    try:
+        # ISO8601 string
+        return datetime.fromisoformat(str(v).replace("Z", "+00:00"))
+    except Exception:
+        return None
 
-        # Look for task_id at the top level or nested
-        task_id = payload.get("task_id") or payload.get("task", {}).get("id")
-        if not task_id:
-            raise HTTPException(status_code=400, detail="Missing task_id")
 
-        # Step 1: Fetch full task details
-        headers = {"Authorization": CLICKUP_TOKEN}
-        task_url = f"https://api.clickup.com/api/v2/task/{task_id}"
-        response = requests.get(task_url, headers=headers)
+def _extract_task(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Be liberal in what we accept. ClickUp payloads vary by event.
+    We try both top-level and nested 'task' objects.
+    """
+    task_obj = payload.get("task") or payload
 
-        if response.status_code != 200:
-            raise HTTPException(status_code=500, detail="Failed to fetch task details")
+    return {
+        "id": str(task_obj.get("id") or payload.get("id") or ""),
+        "name": task_obj.get("name") or payload.get("name") or "Unnamed",
+        "priority": task_obj.get("priority") if isinstance(task_obj.get("priority"), (int, float)) else None,
+        "due_date": _coerce_datetime(task_obj.get("due_date") or payload.get("due_date")),
+        "score": task_obj.get("score"),
+        "status": (task_obj.get("status") or payload.get("status") or "").strip() or None,
+        "is_urgent": _coerce_bool(task_obj.get("is_urgent") or payload.get("is_urgent")),
+        "section": task_obj.get("section") or payload.get("section") or None,
+        "reason": task_obj.get("reason") or payload.get("reason") or None,
+    }
 
-        task = response.json()
 
-        # Inject space name
-        task["space_name"] = task.get("space", {}).get("name", "")
+@router.post("/webhook")
+async def clickup_webhook(request: Request):
+    """
+    Receives ClickUp webhook payloads and upserts into triaged_tasks.
+    """
+    payload = await request.json()
+    task = _extract_task(payload)
 
-        # Step 2 & 3: Score task and Update DB
-        scored = score_task(task)
-        insert_or_replace_task(scored)
+    if not task["id"]:
+        raise HTTPException(status_code=400, detail="Missing task id")
 
-        return {"success": True, "task_id": task_id}
+    # Upsert into Postgres
+    upsert_sql = text("""
+        INSERT INTO triaged_tasks
+            (id, name, priority, due_date, score, status, is_urgent, section, reason)
+        VALUES
+            (:id, :name, :priority, :due_date, :score, :status, :is_urgent, :section, :reason)
+        ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            priority = EXCLUDED.priority,
+            due_date = EXCLUDED.due_date,
+            score = EXCLUDED.score,
+            status = EXCLUDED.status,
+            is_urgent = EXCLUDED.is_urgent,
+            section = EXCLUDED.section,
+            reason = EXCLUDED.reason
+    """)
 
-    except KeyError as e:
-        print(f"[score_task] Key error: '{e}' — skipping task update.")
-        raise HTTPException(status_code=500, detail=f"Missing expected field: {e}")
+    # Use a single transaction
+    engine = get_engine()
+    with engine.begin() as conn:
+        conn.execute(upsert_sql, {
+            "id": task["id"],
+            "name": task["name"],
+            "priority": task["priority"],
+            "due_date": task["due_date"],
+            "score": task["score"],
+            "status": task["status"],
+            "is_urgent": task["is_urgent"],
+            "section": task["section"],
+            "reason": task["reason"],
+        })
 
-    except Exception as e:
-        print(f"Webhook error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"ok": True, "id": task["id"]}
