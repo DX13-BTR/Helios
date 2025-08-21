@@ -5,7 +5,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     ENV: str = "dev"
-    DB_URL: str = "sqlite:///./helios.db"  # or "sqlite:///C:/Helios/core_py/db/helios.db"
+    DB_URL: str = "postgresql+psycopg2://helios:helios@localhost:5432/helios"
     RECLAIM_API_KEY: Optional[str] = None
     TIMEZONE: str = "Europe/London"
     LOG_LEVEL: str = "INFO"
