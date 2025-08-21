@@ -52,7 +52,7 @@ from core_py.routes import contacts_admin
 from core_py.routes.schedule_routes import router as schedule_router
 from core_py.routes.email_tasks import router as email_tasks_router
 from core_py.db.session import get_session, db_session
-
+from core_py.routes.email_tasks_read import router as email_tasks_read_router
 # -----------------------------------------------------------------------------
 # FastAPI app
 # -----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ app.include_router(contacts_router, prefix="/api")
 app.include_router(contacts_admin.router)
 app.include_router(schedule_router, prefix="/api")
 app.include_router(email_tasks_router)
-
+app.include_router(email_tasks_read_router)
 
 # -----------------------------------------------------------------------------
 # Root / Exit

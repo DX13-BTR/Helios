@@ -1,22 +1,39 @@
 # core_py/db/session.py
+# SQLAlchemy engine + session factory + FastAPI dependency + context manager.
+
+import os
+from typing import Generator, Iterator
 from contextlib import contextmanager
-from typing import Generator
-from sqlalchemy.orm import Session, sessionmaker
 
-# Use your existing engine factory
-from core_py.db.database import get_engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
-# Single engine for the app
-engine = get_engine()
+# Prefer env var; fallback to your local Postgres
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg2://helios:helios@localhost:5432/helios",
+)
 
-# Canonical session factory
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+# Engine: pre_ping avoids stale connections across sleep/wake etc.
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    future=True,  # SQLAlchemy 2.x style
+)
 
-# ---- FastAPI dependency (use in route signatures) ---------------------------
-def get_session() -> Generator[Session, None, None]:
+# Session factory
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=False,
+    future=True,
+)
+
+# ----- FastAPI dependency -----
+def get_db() -> Generator[Session, None, None]:
     """
-    FastAPI dependency:
-        def endpoint(db: Session = Depends(get_session)): ...
+    FastAPI dependency that yields a DB session and always closes it.
+    Use: Depends(get_db)
     """
     db = SessionLocal()
     try:
@@ -24,26 +41,22 @@ def get_session() -> Generator[Session, None, None]:
     finally:
         db.close()
 
-# ---- Plain function for non-route code --------------------------------------
-def get_session_sync() -> Session:
+# ----- Script/helper accessor -----
+def get_session() -> Session:
     """
-    Synchronous session getter for services/helpers/background jobs:
-        db = get_session_sync()
-        try:
-            ...
-        finally:
-            db.close()
+    Get a plain Session instance (caller manages commit/rollback/close).
     """
     return SessionLocal()
 
-# ---- Context manager for non-route code -------------------------------------
+# ----- Back-compat context manager expected by tasks_routes.py -----
 @contextmanager
-def db_session() -> Generator[Session, None, None]:
+def db_session() -> Iterator[Session]:
     """
-    Use in services/helpers/cron:
+    Context manager that opens a session, commits on success,
+    rolls back on exception, then closes.
+    Usage:
         with db_session() as db:
             ...
-    Commits on success, rolls back on exception.
     """
     db = SessionLocal()
     try:

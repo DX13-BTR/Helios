@@ -59,6 +59,11 @@ class TaskMeta(Base):
 
     # Optional client code tag
     client_code = Column(String(20))
+    
+     # NEW for email ingestion:
+    start_at = Column(DateTime, nullable=True)
+    due_at = Column(DateTime, nullable=True)
+    source = Column(String(32), nullable=True)  # e.g., 'email'
 
 class TransactionEfkaristo(Base):
     __tablename__ = "transaction_efkaristo"
@@ -112,14 +117,25 @@ class ProcessedEmail(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     message_id = Column(String, nullable=False, unique=True, index=True)
     processed_at = Column(DateTime, nullable=False)
+    # NEW:
+    helios_task_id = Column(String, nullable=True, index=True)  # FK to email_tasks.id (string)
+    status = Column(String(32), nullable=True)                  # e.g., created|dry_run|rejected_allowlist
+    received_at = Column(DateTime, nullable=True)
 
 class EmailTask(Base):
     __tablename__ = "email_tasks"
-    id = Column(String, primary_key=True)            # use Gmail msg id as primary key
+    id = Column(String, primary_key=True)            # Gmail msg id as PK
     client_id = Column(String, nullable=True, index=True)
-    sender = Column(String, nullable=False)
+    sender = Column(String, nullable=False, index=True)
     subject = Column(String, nullable=False)
     snippet = Column(String, nullable=True)
     body_html = Column(String, nullable=True)
     body_text = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False)
+    # NEW:
+    gmail_link = Column(String, nullable=True)
+    thread_id = Column(String, nullable=True, index=True)
+    received_at = Column(DateTime, nullable=True, index=True)
+    source_label = Column(String, nullable=True)            # e.g., triage/inbox
+    priority = Column(String(16), nullable=True)            # low|normal|high
+    client_key_hint = Column(String, nullable=True)
