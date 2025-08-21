@@ -13,6 +13,7 @@ import Button from "../../components/Button.jsx";
 import Skeleton from "../../components/Skeleton.jsx";
 import RealtimeProvider, { useRealtime } from "../../context/RealtimeProvider.jsx";
 import { getJSON, postJSON } from "../../lib/api.js";
+import TodayPanel from "../../components/TodayPanel";
 
 // NEW: Fixed Deadlines panel
 import FixedDeadlinesCard from "../../components/FixedDeadlinesCard.jsx"; // uses your uploaded component
@@ -392,11 +393,9 @@ function HeliosDashboardBody() {
         </Card>
       </section>
             {/* === Today’s Schedule (block-centric) === */}
-+      <section id="todays-schedule" className="scroll-mt-24">
-+        <Card title="📅 Today’s Schedule" className="scroll-mt-24">
-+          <TodaysSchedule />
-+        </Card>
-+      </section>
++      <section id="today-panel" className="scroll-mt-24">
+  <TodayPanel />
+  </section>
       
         
 

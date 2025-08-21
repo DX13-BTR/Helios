@@ -9,12 +9,12 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
 
-HELIOS_API   = os.getenv("HELIOS_API", "http://127.0.0.1:8000")
+HELIOS_API   = os.getenv("HELIOS_API", "http://127.0.0.1:3333")
 TIMEOUT      = int(os.getenv("HELIOS_HTTP_TIMEOUT", "20"))
 GMAIL_TOKEN  = os.getenv("GMAIL_TOKEN", "/mnt/c/Helios/secrets/gmail_token.json")
 
 # Comma-separated Gmail label names to pull from (exact names in your mailbox)
-TRIAGE_LABELS = os.getenv("TRIAGE_LABELS", "1- to respond,2- FYI,4 - Notifications")
+TRIAGE_LABELS = os.getenv("TRIAGE_LABELS", "1 - to respond,2 - FYI,4 - Notifications")
 
 # Optional Gmail search bound to limit churn (keeps queries fast)
 GMAIL_Q = os.getenv("GMAIL_Q", "newer_than:30d")
