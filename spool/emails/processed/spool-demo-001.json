@@ -1,0 +1,9 @@
+﻿{
+  "id": "spool:demo-001",
+  "from": "ops@example.com",
+  "subject": "PO request",
+  "text": "Hi Mike — please approve…",
+  "label": "triage/inbox",
+  "client_code": "acme",
+  "received_ts_ms": 1724236800000
+}

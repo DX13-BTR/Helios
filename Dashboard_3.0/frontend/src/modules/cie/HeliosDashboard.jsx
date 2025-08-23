@@ -6,7 +6,6 @@ import DashboardLayout from "../../components/DashboardLayout.jsx";
 import TaskListPanel from "../../components/TaskListPanel.jsx";
 import PersonalTasks from "../../components/PersonalTasks.jsx";
 import AIAdvicePanel from "../../components/AIAdvicePanel.jsx";
-import TodaysSchedule from "../../components/TodaysSchedule.jsx";
 import ShutdownComplete from "../../components/ShutdownComplete.jsx";
 import Card from "../../components/Card.jsx";
 import Button from "../../components/Button.jsx";
@@ -393,7 +392,7 @@ function HeliosDashboardBody() {
         </Card>
       </section>
             {/* === Today’s Schedule (block-centric) === */}
-+      <section id="today-panel" className="scroll-mt-24">
+      <section id="today-panel" className="scroll-mt-24">
   <TodayPanel />
   </section>
       
